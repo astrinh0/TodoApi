@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace TodoApi.Models
 {
+    // Validation filter for models
     public class ValidationFilter : IActionFilter
     {
         public void OnActionExecuted(ActionExecutedContext context)

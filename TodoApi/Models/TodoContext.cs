@@ -4,6 +4,7 @@ namespace TodoApi.Models
 {
     public class TodoContext : DbContext
     {
+        // Add DBcontext to project
         public TodoContext(DbContextOptions<TodoContext> options)
             : base(options)
         {

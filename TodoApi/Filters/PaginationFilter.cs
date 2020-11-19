@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace TodoApi.Filters
 {
+    // Pagination Configuration
     public class PaginationFilter
     {
         public int PageNumber { get; set; }
@@ -16,6 +17,7 @@ namespace TodoApi.Filters
         }
         public PaginationFilter(int pageNumber, int pageSize)
         {
+            // Page 1 and show 10 items.
             this.PageNumber = pageNumber < 1 ? 1 : pageNumber;
             this.PageSize = pageSize > 10 ? 10 : pageSize;
         }
