@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Filters;
@@ -10,6 +11,7 @@ using TodoApi.Wrappers;
 
 namespace TodoApi.Controllers
 {
+    [Produces("application/json")]
     [Route("api/TodoUsers")]
     [ApiController]
     public class TodoController : ControllerBase
@@ -22,7 +24,11 @@ namespace TodoApi.Controllers
         }
 
 
-        // GET: api/TodoUsers
+        /// <summary>
+        /// Get all users with paging filter
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoUserDTO>>> GetTodoUserDTO([FromQuery] PaginationFilter filter)
         {
@@ -37,6 +43,11 @@ namespace TodoApi.Controllers
 
         }
 
+        /// <summary>
+        /// Get specific User
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoUserDTO>> GetTodoUserDTO(long id)
         {
@@ -52,6 +63,12 @@ namespace TodoApi.Controllers
             return Ok(new Response<TodoUserDTO>(aux));
         }
 
+        /// <summary>
+        /// Change specific user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="todoUserDTO"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTodoUser(long id, TodoUserDTO todoUserDTO)
         {
@@ -81,7 +98,27 @@ namespace TodoApi.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Creates a TodoItem.
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /Todo
+        ///     {
+        ///        "id": 1,
+        ///        "name": "Item1",
+        ///        "isComplete": true
+        ///     }
+        ///
+        /// </remarks>
+        /// <param name="todoUserDTO"></param>
+        /// <returns>A newly created TodoItem</returns>
+        /// <response code="201">Returns the newly created item</response>
+        /// <response code="400">If the item is null</response>   
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<TodoUserDTO>> CreateTodoUser(TodoUserDTO todoUserDTO)
         {
             var todoUser = new TodoUser
@@ -111,6 +148,11 @@ namespace TodoApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes a specific User
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodoUser(long id)
         {
