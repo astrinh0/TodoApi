@@ -99,7 +99,7 @@ namespace TodoApi.Controllers
         }
 
         /// <summary>
-        /// Creates a TodoItem.
+        /// Creates a TodoUser.
         /// </summary>
         /// <remarks>
         /// Sample request:
