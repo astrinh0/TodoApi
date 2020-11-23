@@ -5,36 +5,35 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using TodoApi.Filters;
 using TodoApi.Models;
+using TodoApi.Filters;
 using TodoApi.Wrappers;
 
 namespace TodoApi.Controllers
 {
-    public class TodoController : Controller
+    public class TasksController : Controller
     {
         private readonly TodoContext _context;
 
-        public TodoController(TodoContext context)
+        public TasksController(TodoContext context)
         {
             _context = context;
         }
 
-        // GET: Todo
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUserDTO([FromQuery] PaginationFilter filter)
+        // GET: Tasks
+        public async Task<ActionResult<IEnumerable<Tasks>>> GetTask([FromQuery] PaginationFilter filter)
         {
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var pagedData = await _context.Todo
+            var pagedData = await _context.Tasks
             .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
             .Take(validFilter.PageSize)
             .ToListAsync();
-            var totalRecords = await _context.User.CountAsync();
-            return Ok(new PagedResponse<List<Todo>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
+            var totalRecords = await _context.Tasks.CountAsync();
+            return Ok(new PagedResponse<List<Tasks>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
 
         }
 
-        //return View(await _context.Todo.ToListAsync());
-        // GET: Todo/Details/5
+        // GET: Tasks/Details/5
         public async Task<IActionResult> Details(long? id)
         {
             if (id == null)
@@ -42,39 +41,45 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
 
-            var todo = await _context.Todo
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (todo == null)
+            var task = await _context.Tasks
+                .Include(t => t.Todo)
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(m => m.UserId == id);
+            if (task == null)
             {
                 return NotFound();
             }
 
-            return View(todo);
+            return View(task);
         }
 
-        // GET: Todo/Create
+        // GET: Tasks/Create
         public IActionResult Create()
         {
+            ViewData["TodoId"] = new SelectList(_context.Todo, "Id", "Description");
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Name");
             return View();
         }
 
-        // POST: Todo/Create
+        // POST: Tasks/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Description")] Todo todo)
+        public async Task<IActionResult> Create([Bind("UserId,TodoId")] Tasks task)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(todo);
+                _context.Add(task);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(todo);
+            ViewData["TodoId"] = new SelectList(_context.Todo, "Id", "Description", task.TodoId);
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", task.UserId);
+            return View(task);
         }
 
-        // GET: Todo/Edit/5
+        // GET: Tasks/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
@@ -82,22 +87,24 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
 
-            var todo = await _context.Todo.FindAsync(id);
-            if (todo == null)
+            var task = await _context.Tasks.FindAsync(id);
+            if (task == null)
             {
                 return NotFound();
             }
-            return View(todo);
+            ViewData["TodoId"] = new SelectList(_context.Todo, "Id", "Description", task.TodoId);
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", task.UserId);
+            return View(task);
         }
 
-        // POST: Todo/Edit/5
+        // POST: Tasks/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,Description")] Todo todo)
+        public async Task<IActionResult> Edit(long id, [Bind("UserId,TodoId")] Tasks task)
         {
-            if (id != todo.Id)
+            if (id != task.UserId)
             {
                 return NotFound();
             }
@@ -106,12 +113,12 @@ namespace TodoApi.Controllers
             {
                 try
                 {
-                    _context.Update(todo);
+                    _context.Update(task);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TodoExists(todo.Id))
+                    if (!TaskExists(task.UserId))
                     {
                         return NotFound();
                     }
@@ -122,10 +129,12 @@ namespace TodoApi.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(todo);
+            ViewData["TodoId"] = new SelectList(_context.Todo, "Id", "Description", task.TodoId);
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Name", task.UserId);
+            return View(task);
         }
 
-        // GET: Todo/Delete/5
+        // GET: Tasks/Delete/5
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
@@ -133,30 +142,32 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
 
-            var todo = await _context.Todo
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (todo == null)
+            var task = await _context.Tasks
+                .Include(t => t.Todo)
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(m => m.UserId == id);
+            if (task == null)
             {
                 return NotFound();
             }
 
-            return View(todo);
+            return View(task);
         }
 
-        // POST: Todo/Delete/5
+        // POST: Tasks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var todo = await _context.Todo.FindAsync(id);
-            _context.Todo.Remove(todo);
+            var task = await _context.Tasks.FindAsync(id);
+            _context.Tasks.Remove(task);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TodoExists(long id)
+        private bool TaskExists(long id)
         {
-            return _context.Todo.Any(e => e.Id == id);
+            return _context.Tasks.Any(e => e.UserId == id);
         }
     }
 }

@@ -12,13 +12,13 @@ namespace TodoApi.Models
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Task>()
+            modelBuilder.Entity<Tasks>()
                 .HasKey(at => new { at.UserId, at.TodoId });
-            modelBuilder.Entity<Task>()
+            modelBuilder.Entity<Tasks>()
                 .HasOne(us => us.User)
                 .WithMany(tk => tk.Tasks)
                 .HasForeignKey(us => us.UserId);
-            modelBuilder.Entity<Task>()
+            modelBuilder.Entity<Tasks>()
                 .HasOne(td => td.Todo)
                 .WithMany(tk => tk.Tasks)
                 .HasForeignKey(td => td.TodoId);
@@ -27,6 +27,6 @@ namespace TodoApi.Models
 
         public DbSet<User> User{ get; set; }
         public DbSet<Todo> Todo { get; set; }
-        public DbSet<Task> Task { get; set; }
+        public DbSet<Tasks> Tasks { get; set; }
     }
 }

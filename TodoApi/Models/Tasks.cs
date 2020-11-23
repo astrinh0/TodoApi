@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TodoApi.Models
 {
-    public class Task
+    public class Tasks
     {
         public long UserId { get; set; }
         public long TodoId { get; set; }

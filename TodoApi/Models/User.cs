@@ -18,7 +18,7 @@ namespace TodoApi.Models
 
         public string Secret { get; set; }
 
-        public ICollection<Task> Tasks { get; set; }
+        public ICollection<Tasks> Tasks { get; set; }
     }
 
     // Data from User without a secret
@@ -28,7 +28,7 @@ namespace TodoApi.Models
         [Required]
         public string Name { get; set; }
         public string Job { get; set; }
-        public ICollection<Task> Tasks { get; set; }
+        public ICollection<Tasks> Tasks { get; set; }
 
 
     }

@@ -9,6 +9,6 @@ namespace TodoApi.Models
         public long Id { get; set; }
         [Required]
         public string Description { get; set; }
-        public ICollection<Task> Tasks { get; set; }
+        public ICollection<Tasks> Tasks { get; set; }
     }
 }
