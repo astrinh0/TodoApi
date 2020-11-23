@@ -13,31 +13,32 @@ namespace TodoApi.Controllers
     [Produces("application/json")]
     [Route("api/TodoUsers")]
     [ApiController]
-    public class TodoController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly TodoContext _context;
 
-        public TodoController(TodoContext context)
+        public UserController(TodoContext context)
         {
             _context = context;
         }
 
 
         /// <summary>
-        /// Get all todo with paging filter
+        /// Get all users with paging filter
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Todo>>> GetTodo([FromQuery] PaginationFilter filter)
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUserDTO([FromQuery] PaginationFilter filter)
         {
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var pagedData = await _context.Todo
+            var pagedData = await _context.User
             .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
             .Take(validFilter.PageSize)
+            .Select(x => UserToDTO(x))
             .ToListAsync();
             var totalRecords = await _context.User.CountAsync();
-            return Ok(new PagedResponse<List<Todo>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
+            return Ok(new PagedResponse<List<UserDTO>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
 
         }
 
@@ -47,47 +48,48 @@ namespace TodoApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Todo>> GetTodo(long id)
+        public async Task<ActionResult<UserDTO>> GetUserDTO(long id)
         {
-            var todo = await _context.User.Where(a => a.Id == id).FirstOrDefaultAsync();
+            var todoUser = await _context.User.Where(a => a.Id == id).FirstOrDefaultAsync();
 
-            if (todo == null)
+            if (todoUser == null)
             {
                 return NotFound();
             }
 
+            var aux = UserToDTO(todoUser);
 
-            return Ok(todo);
+            return Ok(new Response<UserDTO>(aux));
         }
 
         /// <summary>
         /// Change specific user
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="todo"></param>
+        /// <param name="UserDTO"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTodo(long id, Todo todo)
+        public async Task<IActionResult> UpdateUser(long id, UserDTO UserDTO)
         {
-            if (id != todo.Id)
+            if (id != UserDTO.Id)
             {
                 return BadRequest();
             }
 
-            var td = await _context.Todo.FindAsync(id);
-            if (td == null)
+            var user = await _context.User.FindAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            td.Description = todo.Description;
-            td.Tasks = todo.Tasks;
+            user.Name = UserDTO.Name;
+            user.Job = UserDTO.Job;
 
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException) when (!TodoExists(id))
+            catch (DbUpdateConcurrencyException) when (!UserExists(id))
             {
                 return NotFound();
             }
@@ -109,32 +111,34 @@ namespace TodoApi.Controllers
         ///     }
         ///
         /// </remarks>
-        /// <param name="todo"></param>
+        /// <param name="UserDTO"></param>
         /// <returns>A newly created TodoItem</returns>
         /// <response code="201">Returns the newly created item</response>
         /// <response code="400">If the item is null</response>   
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<UserDTO>> CreateTodo(Todo todo)
+        public async Task<ActionResult<UserDTO>> CreateUser(UserDTO UserDTO)
         {
-            var td = new Todo
+            var user = new User
             {
-                Description = todo.Description,
-                Tasks = todo.Tasks
+                Job = UserDTO.Job,
+                Name = UserDTO.Name
             };
 
-            var todoValidator = new TodoValidator();
+            var userValidator = new UserValidator();
 
-            var result = todoValidator.Validate(td);
+            var result = userValidator.Validate(user);
 
             if (result.IsValid)
             {
-                _context.Todo.Add(td);
+                _context.User.Add(user);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetTodo), new { id = todo.Id }, td);
-                  
+                return CreatedAtAction(
+                    nameof(GetUserDTO),
+                    new { id = user.Id },
+                    UserToDTO(user));
             }
 
             else
@@ -149,23 +153,31 @@ namespace TodoApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTodo(long id)
+        public async Task<IActionResult> DeleteUser(long id)
         {
-            var todo = await _context.Todo.FindAsync(id);
+            var user = await _context.User.FindAsync(id);
 
-            if (todo == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            _context.Todo.Remove(todo);
+            _context.User.Remove(user);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool TodoExists(long id) =>
-             _context.Todo.Any(e => e.Id == id);
+        private bool UserExists(long id) =>
+             _context.User.Any(e => e.Id == id);
+
+        private static UserDTO UserToDTO(User user) =>
+            new UserDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Job = user.Job
+            };
 
     }
 }
