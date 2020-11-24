@@ -12,75 +12,72 @@ using TodoApi.Wrappers;
 namespace TodoApi.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Tasks")]
+    [Route("api/Todos")]
     [ApiController]
-    public class TasksController : ControllerBase
+    public class TodosController : ControllerBase
     {
         private readonly TodoContext _context;
 
-        public TasksController(TodoContext context)
+        public TodosController(TodoContext context)
         {
             _context = context;
         }
 
         /// <summary>
-        /// Get all the tasks with pagination filter
+        /// Get all todo's with pagination filter
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        // GET: api/Tasks
+        // GET: api/Todos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tasks>>> GetTasks([FromQuery] PaginationFilter filter)
+        public async Task<ActionResult<IEnumerable<Todo>>> GetUserDTO([FromQuery] PaginationFilter filter)
         {
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var pagedData = await _context.Tasks
+            var pagedData = await _context.Todo
             .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
             .Take(validFilter.PageSize)
             .ToListAsync();
-            return Ok(new PagedResponse<List<Tasks>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
-
+             return Ok(new PagedResponse<List<Todo>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
         }
 
 
         /// <summary>
-        /// get a task by two id's
+        /// get todo by id
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="todoId"></param>
         /// <returns></returns>
-        // GET: api/Tasks/5
+        // GET: api/Todos/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Tasks>> GetTasks(long id, long todoId)
+        public async Task<ActionResult<Todo>> GetTodo(long id)
         {
-            var tasks = await _context.Tasks.FindAsync(id, todoId);
+            var todo = await _context.Todo.FindAsync(id);
 
-            if (tasks == null)
+            if (todo == null)
             {
                 return NotFound();
             }
 
-            return tasks;
+            return todo;
         }
 
 
         /// <summary>
-        /// Change a task
+        /// Change a todo
         /// </summary>
         /// <param name="id"></param>
         /// <param name="todo"></param>
-        /// <param name="tasks"></param>
         /// <returns></returns>
-        // PUT: api/Tasks/5
+        // PUT: api/Todos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTasks(long id, long todo, Tasks tasks)
+        public async Task<IActionResult> PutTodo(long id, Todo todo)
         {
-            if (id != tasks.UserId)
+            if (id != todo.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(tasks).State = EntityState.Modified;
+            _context.Entry(todo).State = EntityState.Modified;
 
             try
             {
@@ -88,7 +85,7 @@ namespace TodoApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TasksExists(id, todo))
+                if (!TodoExists(id))
                 {
                     return NotFound();
                 }
@@ -103,61 +100,46 @@ namespace TodoApi.Controllers
 
 
         /// <summary>
-        /// Put a task
+        /// Post a todo on database
         /// </summary>
-        /// <param name="tasks"></param>
+        /// <param name="todo"></param>
         /// <returns></returns>
-        // POST: api/Tasks
+        // POST: api/Todos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Tasks>> PostTasks(Tasks tasks)
+        public async Task<ActionResult<Todo>> PostTodo(Todo todo)
         {
-            _context.Tasks.Add(tasks);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (TasksExists(tasks.UserId, tasks.TodoId))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _context.Todo.Add(todo);
+            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTasks", new { id = tasks.UserId }, tasks);
+            return CreatedAtAction("GetTodo", new { id = todo.Id }, todo);
         }
 
 
         /// <summary>
-        /// delete a task
+        /// delete a todo by id
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="todoId"></param>
         /// <returns></returns>
-        // DELETE: api/Tasks/5
-        [HttpDelete]
-        public async Task<IActionResult> DeleteTasks(long id, long todoId)
+        // DELETE: api/Todos/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTodo(long id)
         {
-            var tasks = await _context.Tasks.FindAsync(id, todoId);
-            if (tasks == null)
+            var todo = await _context.Todo.FindAsync(id);
+            if (todo == null)
             {
                 return NotFound();
             }
 
-            _context.Tasks.Remove(tasks);
+            _context.Todo.Remove(todo);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool TasksExists(long id, long todoid)
+        private bool TodoExists(long id)
         {
-            return _context.Tasks.Any(e => e.UserId == id & e.TodoId == todoid);
+            return _context.Todo.Any(e => e.Id == id);
         }
     }
 }

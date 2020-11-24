@@ -13,7 +13,6 @@ namespace TodoApi.Models
         [Required]
         public string Name { get; set; }
 
-        [DefaultValue(false)]
         public string Job { get; set; }
 
         public string Secret { get; set; }

@@ -11,7 +11,7 @@ using TodoApi.Wrappers;
 namespace TodoApi.Controllers
 {
     [Produces("application/json")]
-    [Route("api/TodoUsers")]
+    [Route("api/Users")]
     [ApiController]
     public class UserController : ControllerBase
     {

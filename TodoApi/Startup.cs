@@ -62,7 +62,8 @@ namespace TodoApi
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-            
+
+            services.AddMvc(option => option.EnableEndpointRouting = false);
             
             services.AddControllers();
 
