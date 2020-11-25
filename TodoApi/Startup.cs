@@ -64,8 +64,10 @@ namespace TodoApi
             });
 
             services.AddMvc(option => option.EnableEndpointRouting = false);
-            
+
             services.AddControllers();
+
+            services.AddControllersWithViews();
 
         }
 
