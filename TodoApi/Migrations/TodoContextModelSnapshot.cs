@@ -18,7 +18,7 @@ namespace TodoApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.0");
 
-            modelBuilder.Entity("TodoApi.Models.Task", b =>
+            modelBuilder.Entity("TodoApi.Models.Tasks", b =>
                 {
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -30,7 +30,7 @@ namespace TodoApi.Migrations
 
                     b.HasIndex("TodoId");
 
-                    b.ToTable("Task");
+                    b.ToTable("Tasks");
                 });
 
             modelBuilder.Entity("TodoApi.Models.Todo", b =>
@@ -71,7 +71,7 @@ namespace TodoApi.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("TodoApi.Models.Task", b =>
+            modelBuilder.Entity("TodoApi.Models.Tasks", b =>
                 {
                     b.HasOne("TodoApi.Models.Todo", "Todo")
                         .WithMany("Tasks")

@@ -109,11 +109,25 @@ namespace TodoApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Todo>> PostTodo(Todo todo)
         {
-            _context.Todo.Add(todo);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTodo", new { id = todo.Id }, todo);
+            var todoValidator = new TodoValidator();
+
+            var result = todoValidator.Validate(todo);
+
+            if (result.IsValid)
+            {
+                _context.Todo.Add(todo);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetTodo", new { id = todo.Id }, todo);
+            }
+
+            else
+            {
+                return BadRequest(result.Errors);
+            }
         }
+    
 
 
         /// <summary>

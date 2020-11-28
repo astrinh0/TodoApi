@@ -129,7 +129,7 @@ namespace TodoApi.Controllers
                 }
             }
 
-            return CreatedAtAction("GetTasks", new { id = tasks.UserId }, tasks);
+            return CreatedAtAction("GetTasks", tasks);
         }
 
 

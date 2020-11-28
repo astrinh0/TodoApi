@@ -107,7 +107,7 @@ namespace TodoApi.Controllers
         ///     {
         ///        "id": 1,
         ///        "name": "Item1",
-        ///        "isComplete": true
+        ///        
         ///     }
         ///
         /// </remarks>
