@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Filters;
 using TodoApi.Models;
+using TodoApi.Services;
 using TodoApi.Wrappers;
 
 namespace TodoApi.Controllers
@@ -17,10 +18,12 @@ namespace TodoApi.Controllers
     public class TodosController : ControllerBase
     {
         private readonly TodoContext _context;
+        private readonly TodosService _todosService;
 
-        public TodosController(TodoContext context)
+        public TodosController(TodoContext context, TodosService todosService)
         {
             _context = context;
+            _todosService = todosService;
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace TodoApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Todo>> GetTodo(long id)
         {
-            var todo = await _context.Todo.FindAsync(id);
+            var todo = await _todosService.GetTodoByIdAsync(id);
 
             if (todo == null)
             {

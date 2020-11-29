@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using System;
+using TodoApi.Repositories;
+using TodoApi.Services;
 
 namespace TodoApi
 {
@@ -22,7 +24,8 @@ namespace TodoApi
         {
             services.InstallServicesinAssembly(Configuration);
 
-
+            services.AddTransient<ITodoRepository, TodoRepository>();
+            services.AddTransient<ITodosService, TodosService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
