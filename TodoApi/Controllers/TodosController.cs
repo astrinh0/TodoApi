@@ -30,7 +30,7 @@ namespace TodoApi.Controllers
         /// <returns></returns>
         // GET: api/Todos
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Todo>>> GetUserDTO([FromQuery] PaginationFilter filter)
+        public async Task<ActionResult<IEnumerable<Todo>>> GetTodo([FromQuery] PaginationFilter filter)
         {
             var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
             var pagedData = await _context.Todo
