@@ -14,13 +14,7 @@ namespace TodoApi.Repositories
 
         Task<Tasks> CreateTaskAsync(Tasks task);
 
-        Task<IEnumerable<Tasks>> GetAllTasksAsync([FromQuery] PaginationFilter filter);
-
         bool TasksExists(long id, long todoid);
-
-        User UserExists(long id);
-
-        Todo TodoExists(long id);
 
     }
 }

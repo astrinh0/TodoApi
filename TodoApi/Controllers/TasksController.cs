@@ -36,13 +36,7 @@ namespace TodoApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tasks>>> GetTasks([FromQuery] PaginationFilter filter)
         {
-            var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var pagedData = await _context.Tasks
-            .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
-            .Take(validFilter.PageSize)
-            .ToListAsync();
-            return Ok(new PagedResponse<List<Tasks>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
-
+            return Ok(await _tasksService.GetAllTasksAsync(filter));
         }
 
 
@@ -56,7 +50,7 @@ namespace TodoApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Tasks>> GetTasks(long id, long todoId)
         {
-            var tasks = await _context.Tasks.FindAsync(id, todoId);
+            var tasks = await _tasksService.GetTasksByIdAsync(id, todoId);
 
             if (tasks == null)
             {

@@ -47,19 +47,6 @@ namespace TodoApi.Repositories
             return task;
         }
 
-        public async Task<IEnumerable<Tasks>> GetAllTasksAsync([FromQuery] PaginationFilter filter)
-        {
-            var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-            var pagedData = await Context.Tasks
-            .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
-            .Take(validFilter.PageSize)
-            .ToListAsync();
-            return new PagedResponse<List<Tasks>>(
-                pagedData, validFilter.PageNumber, validFilter.PageSize);
-                //return Ok(new PagedResponse<List<Tasks>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
-
-        }
-
         public bool TasksExists(long id, long todoid)
         {
             return Context.Tasks.Any(e => e.UserId == id & e.TodoId == todoid);
