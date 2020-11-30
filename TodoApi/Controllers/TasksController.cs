@@ -88,8 +88,7 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<Tasks>> PostTasks(Tasks task)
         {
             // var tasks = await _context.Tasks.FindAsync(id, todoId);
-            task.User = _tasksService.UserExists(task.UserId);
-            task.Todo = _tasksService.TodoExists(task.TodoId);
+            
             return Ok(await _tasksService.CreateTaskAsync(task));
         }
 

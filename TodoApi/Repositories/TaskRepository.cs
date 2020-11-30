@@ -6,16 +6,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using TodoApi.Filters;
 using TodoApi.Models;
+using TodoApi.Services;
 using TodoApi.Wrappers;
 
 namespace TodoApi.Repositories
 {
     public class TaskRepository : BaseRepository<Tasks>, ITaskRepository
     {
+        private readonly ITaskService _taskService;
+      
         //Constructor
-        public TaskRepository(TodoContext context) : base(context)
+        public TaskRepository(TodoContext context, ITaskService taskService) : base(context)
         {
-
+            _taskService = taskService;
         }
 
         // Find Tasks by 2 ids
@@ -29,6 +32,9 @@ namespace TodoApi.Repositories
         public async Task<Tasks> CreateTaskAsync(Tasks task)
         {
             Context.Tasks.Add(task);
+            task.User = _taskService.UserExists(task.UserId);
+            task.Todo = _taskService.TodoExists(task.TodoId);
+
             if (task.User == null | task.Todo == null)
             {
                 return null;

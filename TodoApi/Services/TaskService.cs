@@ -16,11 +16,11 @@ namespace TodoApi.Services
         private readonly TodoContext _context;
 
 
-        public TaskService(ITaskRepository taskRepository, TodoContext context)
+
+        public TaskService(ITaskRepository taskRepository, TodoContext context )
         {
             _taskRepository = taskRepository;
             _context = context;
-          
         }
 
         public async Task<PagedResponse<IList<Tasks>>> GetAllTasksAsync(PaginationFilter filter)
@@ -50,8 +50,8 @@ namespace TodoApi.Services
 
         public User UserExists(long id)
         {
-            User aux;
-            aux = _context.User.Find(id);
+
+            var aux = _context.User.Find(id);
 
             return aux;
 
@@ -59,8 +59,7 @@ namespace TodoApi.Services
 
         public Todo TodoExists(long id)
         {
-            Todo aux;
-            aux = _context.Todo.Find(id);
+            var aux = _context.Todo.Find(id);
 
             return aux;
 
