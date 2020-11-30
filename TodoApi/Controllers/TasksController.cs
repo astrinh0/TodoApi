@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Filters;
 using TodoApi.Models;
 using TodoApi.Wrappers;
+using TodoApi.Services;
 
 namespace TodoApi.Controllers
 {
@@ -17,10 +17,14 @@ namespace TodoApi.Controllers
     public class TasksController : ControllerBase
     {
         private readonly TodoContext _context;
+        private readonly ITaskService _tasksService;
 
-        public TasksController(TodoContext context)
+
+        public TasksController(TodoContext context, ITaskService tasksService)
         {
             _context = context;
+            _tasksService = tasksService;
+
         }
 
         /// <summary>
@@ -105,31 +109,16 @@ namespace TodoApi.Controllers
         /// <summary>
         /// Put a task
         /// </summary>
-        /// <param name="tasks"></param>
+        /// <param name="task"></param>
         /// <returns></returns>
         // POST: api/Tasks
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Tasks>> PostTasks(Tasks tasks)
+        public async Task<ActionResult<Tasks>> PostTasks(Tasks task)
         {
-            _context.Tasks.Add(tasks);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (TasksExists(tasks.UserId, tasks.TodoId))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            // var tasks = await _context.Tasks.FindAsync(id, todoId);
 
-            return CreatedAtAction("GetTasks", tasks);
+            return Ok(await _tasksService.CreateTaskAsync(task));
         }
 
 
@@ -155,9 +144,7 @@ namespace TodoApi.Controllers
             return NoContent();
         }
 
-        private bool TasksExists(long id, long todoid)
-        {
-            return _context.Tasks.Any(e => e.UserId == id & e.TodoId == todoid);
-        }
+       
+
     }
 }

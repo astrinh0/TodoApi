@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Filters;
 using TodoApi.Models;
+using TodoApi.Services;
 using TodoApi.Wrappers;
 
 namespace TodoApi.Controllers
@@ -16,10 +17,12 @@ namespace TodoApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly TodoContext _context;
+        private readonly IUserService _userService;
 
-        public UserController(TodoContext context)
+        public UserController(TodoContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
 
@@ -50,16 +53,16 @@ namespace TodoApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDTO>> GetUserDTO(long id)
         {
-            var todoUser = await _context.User.Where(a => a.Id == id).FirstOrDefaultAsync();
+            var user = await _userService.GetUserByIdAsync(id);
 
-            if (todoUser == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            var aux = UserToDTO(todoUser);
+            var aux = UserToDTO(user);
 
-            return Ok(new Response<UserDTO>(aux));
+            return aux;
         }
 
         /// <summary>

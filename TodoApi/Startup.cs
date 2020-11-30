@@ -24,8 +24,7 @@ namespace TodoApi
         {
             services.InstallServicesinAssembly(Configuration);
 
-            services.AddTransient<ITodoRepository, TodoRepository>();
-            services.AddTransient<ITodosService, TodosService>();
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

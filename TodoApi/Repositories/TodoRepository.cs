@@ -9,5 +9,6 @@ namespace TodoApi.Repositories
         public TodoRepository(TodoContext context) : base(context)
         {
         }
+
     }
 }

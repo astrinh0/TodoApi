@@ -9,6 +9,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using TodoApi.Models;
+using TodoApi.Repositories;
+using TodoApi.Services;
 
 namespace TodoApi.Installers
 {
@@ -55,6 +57,15 @@ namespace TodoApi.Installers
             services.AddControllers();
 
             services.AddControllersWithViews();
+
+            services.AddTransient<ITodoRepository, TodoRepository>();
+            services.AddTransient<ITodosService, TodosService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<ITaskRepository, TaskRepository>();
+            services.AddTransient<ITaskService, TaskService>();
+           
+
 
         }
     }

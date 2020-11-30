@@ -9,6 +9,7 @@ using TodoApi.Filters;
 using TodoApi.Models;
 using TodoApi.Services;
 using TodoApi.Wrappers;
+using TodoApi.Repositories;
 
 namespace TodoApi.Controllers
 {
@@ -18,12 +19,14 @@ namespace TodoApi.Controllers
     public class TodosController : ControllerBase
     {
         private readonly TodoContext _context;
-        private readonly TodosService _todosService;
+        private readonly ITodosService _todosService;
 
-        public TodosController(TodoContext context, TodosService todosService)
+
+        public TodosController(TodoContext context, ITodosService todosService)
         {
             _context = context;
             _todosService = todosService;
+            
         }
 
         /// <summary>
