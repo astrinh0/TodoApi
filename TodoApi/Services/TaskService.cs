@@ -37,5 +37,11 @@ namespace TodoApi.Services
         {
             return await _taskRepository.CreateTaskAsync(task);
         }
+
+        public async Task<Tasks> ChangeTasksAsync(long id, long todo, Tasks tasks)
+        {
+            return await _taskRepository.ChangeTasksAsync(id, todo, tasks);
+        }
+
     }
 }

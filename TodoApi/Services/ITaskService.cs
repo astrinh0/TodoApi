@@ -15,5 +15,8 @@ namespace TodoApi.Services
         Task<Tasks> CreateTaskAsync(Tasks task);
 
         Task<PagedResponse<IList<Tasks>>> GetAllTasksAsync(PaginationFilter filter);
+
+        Task<Tasks> ChangeTasksAsync(long id, long todo, Tasks tasks);
+
     }
 }

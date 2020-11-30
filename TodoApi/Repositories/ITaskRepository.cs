@@ -14,7 +14,9 @@ namespace TodoApi.Repositories
 
         Task<Tasks> CreateTaskAsync(Tasks task);
 
-        bool TasksExists(long id, long todoid);
+        Task<Tasks> ChangeTasksAsync(long id, long todo, Tasks tasks);
+
+
 
     }
 }

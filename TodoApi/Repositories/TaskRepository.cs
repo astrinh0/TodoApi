@@ -12,17 +12,20 @@ namespace TodoApi.Repositories
 {
     public class TaskRepository : BaseRepository<Tasks>, ITaskRepository
     {
-        
+        //Constructor
         public TaskRepository(TodoContext context) : base(context)
         {
 
         }
 
+        // Find Tasks by 2 ids
         public async Task<Tasks> GetTasksByIdAsync(long userId, long todoId)
         {
             return await Context.Set<Tasks>().FindAsync(userId, todoId);
         }
 
+
+        // Create a task association
         public async Task<Tasks> CreateTaskAsync(Tasks task)
         {
             Context.Tasks.Add(task);
@@ -47,12 +50,39 @@ namespace TodoApi.Repositories
             return task;
         }
 
-        public bool TasksExists(long id, long todoid)
+        public async Task<Tasks> ChangeTasksAsync(long id, long todo, Tasks tasks)
+        {
+            
+            Context.Entry(tasks).State = EntityState.Modified;
+
+            try
+            {
+                await Context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!TasksExists(id, todo))
+                {
+                    return null;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return tasks;
+        }
+
+
+
+
+        private bool TasksExists(long id, long todoid)
         {
             return Context.Tasks.Any(e => e.UserId == id & e.TodoId == todoid);
         }
 
-        public User UserExists(long id)
+        private User UserExists(long id)
         {
             User aux;
             aux = Context.User.Find(id);
@@ -61,7 +91,7 @@ namespace TodoApi.Repositories
 
         }
 
-        public Todo TodoExists(long id)
+        private Todo TodoExists(long id)
         {
             Todo aux;
             aux = Context.Todo.Find(id);

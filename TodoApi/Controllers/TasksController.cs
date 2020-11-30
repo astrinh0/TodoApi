@@ -73,30 +73,7 @@ namespace TodoApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTasks(long id, long todo, Tasks tasks)
         {
-            if (id != tasks.UserId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(tasks).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TasksExists(id, todo))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Ok(await _tasksService.ChangeTasksAsync(id, todo, tasks));
         }
 
 
