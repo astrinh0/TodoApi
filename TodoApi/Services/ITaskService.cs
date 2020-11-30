@@ -18,5 +18,10 @@ namespace TodoApi.Services
 
         Task<Tasks> ChangeTasksAsync(long id, long todo, Tasks tasks);
 
+        User UserExists(long id);
+
+        Todo TodoExists(long id);
+
+
     }
 }

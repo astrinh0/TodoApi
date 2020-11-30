@@ -29,8 +29,10 @@ namespace TodoApi.Repositories
         public async Task<Tasks> CreateTaskAsync(Tasks task)
         {
             Context.Tasks.Add(task);
-            task.User = UserExists(task.UserId);
-            task.Todo = TodoExists(task.TodoId);
+            if (task.User == null | task.Todo == null)
+            {
+                return null;
+            }
             try
             {
                 await Context.SaveChangesAsync();
@@ -82,22 +84,5 @@ namespace TodoApi.Repositories
             return Context.Tasks.Any(e => e.UserId == id & e.TodoId == todoid);
         }
 
-        private User UserExists(long id)
-        {
-            User aux;
-            aux = Context.User.Find(id);
-
-            return aux;
-
-        }
-
-        private Todo TodoExists(long id)
-        {
-            Todo aux;
-            aux = Context.Todo.Find(id);
-
-            return aux;
-
-        }
     }
 }
